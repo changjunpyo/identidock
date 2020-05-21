@@ -1,2 +1,2 @@
 # identidock
-Identicon service with docker
+Identicon service using go echo framework with docker
