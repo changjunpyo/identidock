@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>Identidock</title>
+  </head>
+  <body>
+    <form method="POST">
+      Hello <input type="text" name="name" value="{{index . "name"}}" />
+      <input type="submit" value="submit" />
+    </form>
+    <p>you look like a</p>
+    <img src="/monster/{{index . "name_hash"}}" />
+  </body>
+</html>
