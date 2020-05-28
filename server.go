@@ -1,19 +1,19 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"github.com/labstack/echo/v4"
 	"html/template"
 	"io"
 	"net/http"
-	"crypto/sha256"
-	"encoding/hex"
 )
 
-type TemplateRenderer struct{
+type TemplateRenderer struct {
 	templates *template.Template
 }
 
-func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{},c echo.Context) error{
+func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
@@ -24,10 +24,8 @@ func main() {
 	}
 	e.Renderer = renderer
 
-
 	e.GET("/", handleIndex)
 	e.POST("/", handleIndex)
-
 
 	e.GET("/monster/:name", getIdenticon)
 
@@ -36,20 +34,20 @@ func main() {
 
 func getIdenticon(c echo.Context) error {
 	name := c.Param("name")
-	resp , _ := http.Get(`http://dnmonster:8080/monster/`+name+ `?size=80`)
+	resp, _ := http.Get(`http://dnmonster:8080/monster/` + name + `?size=80`)
 	return c.Stream(http.StatusOK, "image/png", resp.Body)
 }
 
-func handleIndex(c echo.Context) error{
-		salt := "UNIQUE"
-		h := sha256.New()
-		saltedName := salt + "Joe malone"
-		if c.FormValue("name") != "" {
-			saltedName = salt+ c.FormValue("name")
-		}
-		h.Write([]byte(saltedName))
-		return c.Render(http.StatusOK, "index.html", map[string]interface{}{
-			"name" : c.FormValue("name"),
-			"name_hash": hex.EncodeToString(h.Sum(nil)),
-		})
+func handleIndex(c echo.Context) error {
+	salt := "UNIQUE"
+	h := sha256.New()
+	saltedName := salt + "Joe malone"
+	if c.FormValue("name") != "" {
+		saltedName = salt + c.FormValue("name")
+	}
+	h.Write([]byte(saltedName))
+	return c.Render(http.StatusOK, "index.html", map[string]interface{}{
+		"name":      c.FormValue("name"),
+		"name_hash": hex.EncodeToString(h.Sum(nil)),
+	})
 }
